@@ -42,28 +42,35 @@ document.addEventListener('DOMContentLoaded', () => {
         const [
         cardTexture,
         webTexture,
+        pgTexture,
         ] = await loadTextures([ //put path location to each item respectively
         './Assets/Images/I-Logo-Text-BWH.png',
-        './Assets/Images/Web.png'
+        './Assets/Images/Web.png',
+        './Assets/Images/Procter_&_Gamble_logo.svg.png'
         ]);
 
         const planeGeometry = new THREE.PlaneGeometry(1, 0.552);    //use this for square 
         const mainIcon = new THREE.CircleGeometry(0.5, 32);       
         const cardMaterial = new THREE.MeshBasicMaterial({map: cardTexture});
         const card = new THREE.Mesh(mainIcon, cardMaterial);            
+        card.position.set(0, 0, 0.1)
 
         const iconGeometry = new THREE.CircleGeometry(0.075, 32);   //use this for circle  
 
         const webMaterial = new THREE.MeshBasicMaterial({map: webTexture});
+        const pgMaterial = new THREE.MeshBasicMaterial({map: pgTexture});
         const webIcon = new THREE.Mesh(iconGeometry, webMaterial);
+        const pgIcon = new THREE.Mesh(iconGeometry, pgMaterial);
 
 
         webIcon.position.set(0, -0.7, 0);
+        pgIcon.position.set(0, 0.7, 0);
 
         //create anchor points to images
         const anchor = mindarThree.addAnchor(0); //first image rendered in targets.mind
         anchor.group.add(card); //THREE.Group
         anchor.group.add(webIcon);
+        anchor.group.add(pgIcon);
         anchor.onTargetFound = () => {
             console.log("IC logo found");
         }
@@ -85,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         //Button handling
         webIcon.userData.clickable = true;
+        pgIcon.userData.clickable = true;
 
         document.body.addEventListener('click', (e) => {
             const mouseX = (e.clientX / window.innerWidth) * 2 - 1;
@@ -100,9 +108,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     o = o.parent;
                 }
                 if (o.userData.clickable) {
-                     if (o === webIcon) {
+                    if (o === webIcon) {
                         textObj.visible = true;
                         textElement.innerHTML = "https://us.pg.com/";
+                    }
+                    else if(o === pgIcon){
+                        location.href = "https://us.pg.com/";
                     }
                 }
             }
@@ -117,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const delta = clock.getDelta();
             const elapsed = clock.getElapsedTime();
             const iconScale = 1 + 0.2 * Math.sin(elapsed*5);
-            [webIcon].forEach((icon) => {
+            [webIcon, pgIcon].forEach((icon) => {
 	            icon.scale.set(iconScale, iconScale, iconScale);
             });
 
