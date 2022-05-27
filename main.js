@@ -1,3 +1,4 @@
+import { CSS3DObject } from '/node_modules/three/examples/jsm/renderers/CSS3DRenderer.js';
 const THREE = window.MINDAR.IMAGE.THREE;
 
 function videoLoop(path){
@@ -34,19 +35,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         //videoLoop("./Assets/Videos/test-ICLogo.mp4")
 
+        //initialize mindAR
         const mindarThree = new window.MINDAR.IMAGE.MindARThree({
             container: document.body,
             imageTargetSrc: './Assets/targets.mind',
             maxTrack: 1, //how many images to track at one time on screen. can affect performance noticeably so keep reasonable/necessary
         });
 
-        const {renderer, scene, camera} = mindarThree;
+        const {renderer, cssRenderer, scene, cssScene, camera} = mindarThree;
 
+        const light = new THREE.HemisphereLight( 0xffffff, 0xbbbbff, 1 );
+        scene.add(light);
 
-        //creating some basic squares for testing
-        const geometry = new THREE.PlaneGeometry(1,1);
-        const Bluematerial = new THREE.MeshBasicMaterial({color: 0x0000ff, transparent: true, opacity: 0.5});
-        const Blueplane = new THREE.Mesh(geometry, Bluematerial);
+        const [
+        cardTexture,
+        ] = await loadTextures([
+        './Assets/Images/I-Logo-Text-BWH.png',
+        ]);
+
+        const planeGeometry = new THREE.PlaneGeometry(1, 0.552);
+        const cardMaterial = new THREE.MeshBasicMaterial({map: cardTexture});
+        const card = new THREE.Mesh(planeGeometry, cardMaterial);
 
         //create anchor points to images
         const anchor = mindarThree.addAnchor(0); //first image rendered in targets.mind
