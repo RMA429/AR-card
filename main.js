@@ -1,4 +1,7 @@
 import { CSS3DObject } from '/node_modules/three/examples/jsm/renderers/CSS3DRenderer.js';
+
+import {loadGLTF, loadTexture, loadTextures, loadVideo} from '/libs/loaders.js';
+
 const THREE = window.MINDAR.IMAGE.THREE;
 
 function videoLoop(path){
@@ -17,18 +20,6 @@ function videoLoop(path){
         });
     }
 }
-
-function loadVideo(path){
-    return new Promise((resolve, reject) => {
-      const video = document.createElement("video");
-      //video.addEventListener('loadeddata', () => {
-      video.addEventListener('loadedmetadata', () => {
-        video.setAttribute('playsinline', '');
-        resolve(video);
-      });
-      video.src = path;
-    });
-  }
 
 document.addEventListener('DOMContentLoaded', () => {
     const start = async() =>{
@@ -59,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         //create anchor points to images
         const anchor = mindarThree.addAnchor(0); //first image rendered in targets.mind
-        anchor.group.add(Blueplane); //THREE.Group
+        anchor.group.add(card); //THREE.Group
         anchor.onTargetFound = () => {
             console.log("IC logo found");
         }
