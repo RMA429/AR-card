@@ -38,24 +38,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const light = new THREE.HemisphereLight( 0xffffff, 0xbbbbff, 1 );
         scene.add(light);
 
+        //set up textures for icons/card here
         const [
         cardTexture,
         webTexture,
-        ] = await loadTextures([
+        ] = await loadTextures([ //put path location to each item respectively
         './Assets/Images/I-Logo-Text-BWH.png',
         './Assets/Images/Web.png'
         ]);
 
-        const planeGeometry = new THREE.PlaneGeometry(1, 0.552);
+        const planeGeometry = new THREE.PlaneGeometry(1, 0.552);    //use this for square 
+        const mainIcon = new THREE.CircleGeometry(0.5, 32);       
         const cardMaterial = new THREE.MeshBasicMaterial({map: cardTexture});
-        const card = new THREE.Mesh(planeGeometry, cardMaterial);
+        const card = new THREE.Mesh(mainIcon, cardMaterial);            
 
-        const iconGeometry = new THREE.CircleGeometry(0.075, 32);
+        const iconGeometry = new THREE.CircleGeometry(0.075, 32);   //use this for circle  
+
         const webMaterial = new THREE.MeshBasicMaterial({map: webTexture});
         const webIcon = new THREE.Mesh(iconGeometry, webMaterial);
 
 
-        webIcon.position.set(-0.14, -0.5, 0);
+        webIcon.position.set(0, -0.7, 0);
 
         //create anchor points to images
         const anchor = mindarThree.addAnchor(0); //first image rendered in targets.mind
@@ -68,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("IC logo lost");
         }
 
+        //CSS setup
         const textElement = document.createElement("div");
         const textObj = new CSS3DObject(textElement);
         textObj.position.set(0, -1000, 0);
