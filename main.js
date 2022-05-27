@@ -40,17 +40,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const [
         cardTexture,
+        webTexture,
         ] = await loadTextures([
         './Assets/Images/I-Logo-Text-BWH.png',
+        './Assets/Images/Web.png'
         ]);
 
         const planeGeometry = new THREE.PlaneGeometry(1, 0.552);
         const cardMaterial = new THREE.MeshBasicMaterial({map: cardTexture});
         const card = new THREE.Mesh(planeGeometry, cardMaterial);
 
+        const iconGeometry = new THREE.CircleGeometry(0.075, 32);
+        const webMaterial = new THREE.MeshBasicMaterial({map: webTexture});
+        const webIcon = new THREE.Mesh(iconGeometry, webMaterial);
+
+
+        webIcon.position.set(-0.14, -0.5, 0);
+
         //create anchor points to images
         const anchor = mindarThree.addAnchor(0); //first image rendered in targets.mind
         anchor.group.add(card); //THREE.Group
+        anchor.group.add(webIcon);
         anchor.onTargetFound = () => {
             console.log("IC logo found");
         }
@@ -58,10 +68,57 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("IC logo lost");
         }
 
+        const textElement = document.createElement("div");
+        const textObj = new CSS3DObject(textElement);
+        textObj.position.set(0, -1000, 0);
+        textObj.visible = false;
+        textElement.style.background = "#FFFFFF";
+        textElement.style.padding = "30px";
+        textElement.style.fontSize = "60px";
+    
+        const cssAnchor = mindarThree.addCSSAnchor(0);
+        cssAnchor.group.add(textObj);
+
+        //Button handling
+        webIcon.userData.clickable = true;
+
+        document.body.addEventListener('click', (e) => {
+            const mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            const mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+            const mouse = new THREE.Vector2(mouseX, mouseY);
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(scene.children, true);
+      
+            if (intersects.length > 0) {
+                let o = intersects[0].object; 
+                while (o.parent && !o.userData.clickable) {
+                    o = o.parent;
+                }
+                if (o.userData.clickable) {
+                     if (o === webIcon) {
+                        textObj.visible = true;
+                        textElement.innerHTML = "https://us.pg.com/";
+                    }
+                }
+            }
+        });
+      
+        
+        const clock = new THREE.Clock();
+
         await mindarThree.start();
 
         renderer.setAnimationLoop(() => {
+            const delta = clock.getDelta();
+            const elapsed = clock.getElapsedTime();
+            const iconScale = 1 + 0.2 * Math.sin(elapsed*5);
+            [webIcon].forEach((icon) => {
+	            icon.scale.set(iconScale, iconScale, iconScale);
+            });
+
             renderer.render(scene, camera);
+            cssRenderer.render(cssScene, camera);
         });
     }
 
